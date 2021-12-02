@@ -1,5 +1,6 @@
 [package]
-name = "Dev_Cron/camerashake"
+name = "developercron/camerashake"
+description = "CameraShake class"
 version = "0.1.0"
 registry = "https://github.com/UpliftGames/wally-index"
 realm = "shared"
