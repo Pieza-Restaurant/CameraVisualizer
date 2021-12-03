@@ -5,23 +5,23 @@
 ___
 
 ```lua
-    function CameraShake.init()
+    function CameraVisualizer.init()
 ```
-Initializes the CameraShake.
+Initializes the CameraVisualizer.
 
 ```lua
-    function CameraShake:AddSound(Sound)
+    function CameraVisualizer:AddSound(Sound)
 ```
 
 `Sound: Instance` The sound the camera will visualize.
 
 ```lua
-    function CameraShake:Disconnect()
+    function CameraVisualizer:Disconnect()
 ```
 Disconnects the RunConnection.
 
 ```lua
-    function CameraShake:Start()
+    function CameraVisualizer:Start()
 ```
 Starts the sound visualizing
 
@@ -31,10 +31,10 @@ ___
 
 ```lua
     local Sound = workspace.Sound
-    local CameraShake = require(path.to.CameraShake).init()
+    local CameraVisualizer = require(path.to.CameraVisualizer).init()
     
-    CameraShake:AddSound(Sound)
-    CameraShake:Start()
+    CameraVisualizer:AddSound(Sound)
+    CameraVisualizer:Start()
 ```
 
 

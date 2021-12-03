@@ -1,16 +1,16 @@
 
--- CameraShake
+-- CameraVisualizer
 -- @author: Dev_Cron
 
 --[[
     Methods: 
-        Public metadata CameraShake.init()
-        Public void CameraShake:Disconnect()
-        Public void CameraShake:Start()
-        Public void CameraShake:AddSound(Sound: Sound)
+        Public metadata CameraVisualizer.init()
+        Public void CameraVisualizer:Disconnect()
+        Public void CameraVisualizer:Start()
+        Public void CameraVisualizer:AddSound(Sound: Sound)
         
-        Private void CameraShake:Play()
-        Private void CameraShake:RemoveSound()
+        Private void CameraVisualizer:Play()
+        Private void CameraVisualizer:RemoveSound()
 ]]--
 
 local TweenService = game:GetService("TweenService")
@@ -18,11 +18,11 @@ local RunService = game:GetService("RunService")
 
 local Info = TweenInfo.new(0.10, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut) 
 
-local CameraShake = {}
-CameraShake.__index = CameraShake
+local CameraVisualizer = {}
+CameraVisualizer.__index = CameraVisualizer
 
-function CameraShake.init()
-	print("CameraShake initialized")
+function CameraVisualizer.init()
+	print("CameraVisualizer initialized")
 
 	return setmetatable({
 		--> Instances
@@ -30,10 +30,10 @@ function CameraShake.init()
 		Sound = nil;
 		--> Connections
 		RunConnection = nil;
-	}, CameraShake)
+	}, CameraVisualizer)
 end
 
-function CameraShake:Play()
+function CameraVisualizer:Play()
 	local Properties 
 	if (self.Sound.PlaybackLoudness/1000)>= 0.30 and self.Camera.FieldOfView < 74 then
 		Properties = {FieldOfView = 68 + (self.Sound.PlaybackLoudness/100)}
@@ -45,7 +45,7 @@ function CameraShake:Play()
 	Tween:Play()
 end
 
-function CameraShake:Start()
+function CameraVisualizer:Start()
 	self:Disconnect()
 
 	self.RunConnection =  RunService.RenderStepped:Connect(function()
@@ -53,7 +53,7 @@ function CameraShake:Start()
 	end)
 end
 
-function CameraShake:AddSound(Sound: Sound)
+function CameraVisualizer:AddSound(Sound: Sound)
 	assert(typeof(Sound) == 'Instance', "required argument")
 	self:RemoveSound()
 	
@@ -63,17 +63,17 @@ function CameraShake:AddSound(Sound: Sound)
 	self.Sound = Sound
 end
 
-function CameraShake:RemoveSound()
+function CameraVisualizer:RemoveSound()
 	self:Disconnect()
 
 	self.Sound = nil
 end
 
-function CameraShake:Disconnect()
+function CameraVisualizer:Disconnect()
 	if self.RunConnection then
 		self.RunConnection:Disconnect()
 		self.RunConnection = nil
 	end
 end
 
-return CameraShake
+return CameraVisualizer

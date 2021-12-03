@@ -1,5 +1,5 @@
 {
-    "name": "CameraShake",
+    "name": "CameraVisualizer",
     "tree": {
         "$path": "src"
     }
