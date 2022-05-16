@@ -1,79 +1,104 @@
+-- strict
 
--- CameraVisualizer
--- @author: Dev_Cron
+-- init
+-- @author: Dev_Cron, 15/05/2022
 
---[[
-    Methods: 
-        Public metadata CameraVisualizer.init()
-        Public void CameraVisualizer:Disconnect()
-        Public void CameraVisualizer:Start()
-        Public void CameraVisualizer:AddSound(Sound: Sound)
-        
-        Private void CameraVisualizer:Play()
-        Private void CameraVisualizer:RemoveSound()
-]]--
-
-local TweenService = game:GetService("TweenService")
+-- Services
+local TweenService = game:GetService('TweenService')
 local RunService = game:GetService("RunService")
 
-local Info = TweenInfo.new(0.10, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut) 
+--[=[
+	Methods:
+	Public void Module.new() => New module object 
+	Public void CameraVisualizer:LinkSound(Sound: Sound | Model)
+	Public Void CameraVisualizer:UnLinkSound()
+	Public void CameraVisualizer:Destroy()
 
-local CameraVisualizer = {}
-CameraVisualizer.__index = CameraVisualizer
+	Private function Playing()
+]=]
 
-function CameraVisualizer.init()
-	print("CameraVisualizer initialized")
+local Module = {}
 
-	return setmetatable({
-		--> Instances
-		Camera = workspace.CurrentCamera;
-		Sound = nil;
-		--> Connections
-		RunConnection = nil;
-	}, CameraVisualizer)
-end
+-- Creates a new module object
+function Module.new()
+	local CurrentCamera = workspace.CurrentCamera
+	if not CurrentCamera then return end
 
-function CameraVisualizer:Play()
-	local Properties 
-	if (self.Sound.PlaybackLoudness/1000)>= 0.30 and self.Camera.FieldOfView < 74 then
-		Properties = {FieldOfView = 68 + (self.Sound.PlaybackLoudness/100)}
-	else
-		Properties = {FieldOfView = 68 - (self.Sound.PlaybackLoudness/1000)}
+	local CameraVisualizer = {
+		TweenInfo = TweenInfo.new(0.10, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut) ,
+		PlayingConnection = nil,
+		BufferConnection = nil,
+		Sound = nil,
+	}
+
+	local function Playing()
+		if CameraVisualizer.BufferConnection then
+			CameraVisualizer.BufferConnection:Disconnect()
+			CameraVisualizer.BufferConnection = nil
+		end
+
+		local Sound = CameraVisualizer.Sound :: Sound
+		if not Sound then return end
+
+		local Properties 
+
+		if Sound.Playing then
+			CameraVisualizer.BufferConnection = RunService.RenderStepped:Connect(function()
+				if (Sound.PlaybackLoudness/1000)>= 0.10 and CurrentCamera.FieldOfView < 74 then
+					Properties = {FieldOfView = 68 + (Sound.PlaybackLoudness/100)}
+				else
+					Properties = {FieldOfView = 68 - (Sound.PlaybackLoudness/1000)}
+				end
+				
+
+				local Tween = TweenService:Create(CurrentCamera, CameraVisualizer.TweenInfo, Properties)
+				Tween:Play()
+			end)
+		end
 	end
-    
-	local Tween = TweenService:Create(self.Camera, Info, Properties)
-	Tween:Play()
-end
-
-function CameraVisualizer:Start()
-	self:Disconnect()
-
-	self.RunConnection =  RunService.RenderStepped:Connect(function()
-		self:Play()
-	end)
-end
-
-function CameraVisualizer:AddSound(Sound: Sound)
-	assert(typeof(Sound) == 'Instance', "required argument")
-	self:RemoveSound()
 	
-	if not Sound.IsPlaying then
-		Sound.Playing = true
+	-- Links up the sound
+	function CameraVisualizer:LinkSound(Sound : Sound)
+		-- Disconnect the old connection if there's 
+		self:UnLinkSound()
+
+		CameraVisualizer.Sound = Sound
+
+		Playing()
+
+		CameraVisualizer.PlayingConnection = Sound:GetPropertyChangedSignal("Playing"):Connect(Playing)
 	end
-	self.Sound = Sound
-end
+	
+	-- Cleans up the connections
+	function CameraVisualizer:UnLinkSound()
+		if CameraVisualizer.PlayingConnection then
+			CameraVisualizer.PlayingConnection:Disconnect()
+			CameraVisualizer.PlayingConnection = nil
+		end
 
-function CameraVisualizer:RemoveSound()
-	self:Disconnect()
+		if CameraVisualizer.BufferConnection then
+			CameraVisualizer.BufferConnection:Disconnect()
+			CameraVisualizer.BufferConnection = nil
+		end
 
-	self.Sound = nil
-end
-
-function CameraVisualizer:Disconnect()
-	if self.RunConnection then
-		self.RunConnection:Disconnect()
-		self.RunConnection = nil
+		CameraVisualizer.Sound = nil
 	end
+
+	function CameraVisualizer:Destroy()
+		if CameraVisualizer.PlayingConnection then
+			CameraVisualizer.PlayingConnection:Disconnect()
+			CameraVisualizer.PlayingConnection = nil
+		end
+
+		if CameraVisualizer.BufferConnection then
+			CameraVisualizer.BufferConnection:Disconnect()
+			CameraVisualizer.BufferConnection = nil
+		end
+
+		CameraVisualizer.Sound = nil
+	end
+
+	return CameraVisualizer
 end
 
-return CameraVisualizer
+return Module

@@ -1,0 +1,12 @@
+{
+    "name": "CameraVisualizer",
+    "tree": {
+        "$className": "DataModel",
+        "ReplicatedStorage": {
+            "$className": "ReplicatedStorage",
+            "CameraVisualizer": {
+                "$path": "src"
+            }
+        }
+    }
+}
