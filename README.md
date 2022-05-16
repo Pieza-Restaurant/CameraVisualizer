@@ -1,40 +1,28 @@
-## CamerShake
+## CameraVisualizer
 
 
 ### API
 ___
 
 ```lua
-    function CameraVisualizer.init()
+    function CameraVisualizer.new()
 ```
 Initializes the CameraVisualizer.
 
 ```lua
-    function CameraVisualizer:AddSound(Sound)
+    function CameraVisualizer:LinkSound(Sound)
 ```
 
 `Sound: Instance` The sound the camera will visualize.
 
-```lua
-    function CameraVisualizer:Disconnect()
-```
-Disconnects the RunConnection.
-
-```lua
-    function CameraVisualizer:Start()
-```
-Starts the sound visualizing
-
-___
 
 ## Usage
 
 ```lua
     local Sound = workspace.Sound
-    local CameraVisualizer = require(path.to.CameraVisualizer).init()
+    local CameraVisualizer = require(path.to.CameraVisualizer).new()
     
-    CameraVisualizer:AddSound(Sound)
-    CameraVisualizer:Start()
+    CameraVisualizer:LinkSound(Sound)
 ```
 
 
